@@ -71,7 +71,7 @@ public class Thebe_iCal {
 		catch (FileNotFoundException fnf) {
 			JOptionPane.showMessageDialog(null, "The file could not be found!");
 		}
-		//displays message if file was written successfully
+		//displays message if file was written successfully check if changes were made
 		JOptionPane.showMessageDialog(null,"Content has been successfully written to file!");
 
 	}
