@@ -67,6 +67,7 @@ public class Thebe_iCal {
 			fileWriter.close();
 			
 		}
+		//this exception must be caught in order to use the fileWriter
 		catch (FileNotFoundException fnf) {
 			JOptionPane.showMessageDialog(null, "The file could not be found!");
 		}
