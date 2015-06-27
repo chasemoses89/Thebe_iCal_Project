@@ -16,6 +16,7 @@ public class Thebe_iCal {
 			//makes connection to fileWriter and output file
 			fileWriter = new PrintWriter("iCal_Event.ics");
 			//begin writing to file
+			//every line that is commented out is optional and can still be read/processed by MS Outllok 2010
 			fileWriter.println("BEGIN:VCALENDAR\n"
 					+ "PRODID:-//Microsoft Corporation//Outlook 14.0 MIMEDIR//EN\n"
 					+ "VERSION:2.0\n"
