@@ -1,7 +1,7 @@
+import java.time.LocalDateTime;
 import java.util.*;
 import java.io.*;
-import javax.swing.JOptionPane;
-import javax.swing.JTextField;
+
 import javax.swing.*;
 
 /**
@@ -19,30 +19,36 @@ public class Thebe_iCal {
 		//Event description which will be placed in the body
 		String sBody = "";
 		//Beginning month event starts
-		int iStartMonth;
+		String sStartMonth = "";
 		//Beginning day event starts
-		int iStartDay;
+		String sStartDay = "";
 		//Beginning year event starts
-		int iStartYear;
+		String sStartYear = "";
+		//Beginning time event starts
+		String sStartTime = "";
 		//End month event ends
-		int iEndMonth;
+		String sEndMonth = "";
 		//End day event ends
-		int iEndDay;
+		String sEndDay = "";
 		//End year event ends
-		int iEndYear;
+		String sEndYear = "";
+		//End time event ends
+		String sEndTime = "";
+		//Current time and date
+		String sCurrentTime = "";
 		//sentinel value
 		boolean bContinue = false;
 		
-		String[] sTimes = {"0000", "0100", "0200", "0300", "0400", "0500", "0600", "0700", "1000", "1100", "1200", "1300", "1400", "1500", "1600", "1700", "1800", "1900", "2000", "2100", "2200", "2300"};
-		String[] sMonths = {"01", "02", "03", "04", "05", "06", "07", "08", "09", "10", "11", "12"};
-		Integer[] iYears = {2015, 2016, 2017, 2018, 2019, 2020};
+		String[] sTime = {"0000", "0100", "0200", "0300", "0400", "0500", "0600", "0700", "1000", "1100", "1200", "1300", "1400", "1500", "1600", "1700", "1800", "1900", "2000", "2100", "2200", "2300"};
+		String[] sMonth = {"01", "02", "03", "04", "05", "06", "07", "08", "09", "10", "11", "12"};
+		String[] sYear = {"2015", "2016", "2017", "2018", "2019", "2020"};
 		
-		JComboBox jStartTime = new JComboBox(sTimes);
-		JComboBox jStartMonths = new JComboBox(sMonths);
-		JComboBox jStartYears = new JComboBox(iYears);
-		JComboBox jEndTime = new JComboBox(sTimes);
-		JComboBox jEndMonths = new JComboBox(sMonths);
-		JComboBox jEndYears = new JComboBox(iYears);
+		JComboBox jStartTime = new JComboBox(sTime);
+		JComboBox jStartMonth = new JComboBox(sMonth);
+		JComboBox jStartYear = new JComboBox(sYear);
+		JComboBox jEndTime = new JComboBox(sTime);
+		JComboBox jEndMonth = new JComboBox(sMonth);
+		JComboBox jEndYear = new JComboBox(sYear);
 		
 		JTextField fSubject = new JTextField();
 		JTextField fLocation = new JTextField();
@@ -52,11 +58,11 @@ public class Thebe_iCal {
 			"Subject", fSubject,
 			"Location", fLocation,
 			"Description", fDescription,
-			"Start Years", jStartYears,
-			"Start Months", jStartMonths,
+			"Start Years", jStartYear,
+			"Start Months", jStartMonth,
 			"Start Time", jStartTime,
-			"End Years", jEndYears,
-			"End Months", jEndMonths,
+			"End Years", jEndYear,
+			"End Months", jEndMonth,
 			"End Time", jEndTime
 		};
 		
@@ -65,7 +71,17 @@ public class Thebe_iCal {
 		sSubject = fSubject.getText();
 		sLocation = fLocation.getText();
 		sBody = fDescription.getText();
-
+		sStartYear = jStartYear.getSelectedItem().toString();
+		sStartMonth = jStartMonth.getSelectedItem().toString();
+		sStartTime = jStartTime.getSelectedItem().toString();
+		sEndYear = jEndYear.getSelectedItem().toString();
+		sEndMonth = jEndMonth.getSelectedItem().toString();
+		sEndTime = jEndTime.getSelectedItem().toString();
+		
+		sCurrentTime = LocalDateTime.now().toString();
+		
+		System.out.println(sCurrentTime);
+		
 		//initializes fileWriter
 		PrintWriter fileWriter = null;
 		try {
@@ -90,9 +106,9 @@ public class Thebe_iCal {
 					+ "CLASS:PUBLIC\n"
 					+ "CREATED:20150627T031544Z\n"
 					+ "DESCRIPTION:" + sBody + "\\n\n"
-					+ "DTEND;TZID=\"Hawaiian Standard Time\":20150817T140000\n"
+					+ "DTEND;TZID=\"Hawaiian Standard Time\":" + sEndYear + sEndMonth + "T" + sEndTime + "00\n"
 					+ "DTSTAMP:20150627T031544Z\n"
-					+ "DTSTART;TZID=\"Hawaiian Standard Time\":20150817T130000\n"
+					+ "DTSTART;TZID=\"Hawaiian Standard Time\":" + sStartYear + sStartMonth + "T" + sStartTime + "00\n"
 					+ "LAST-MODIFIED:20150627T031544Z\n"
 					+ "LOCATION:" + sLocation + "\n"
 					+ "PRIORITY:5\n"
