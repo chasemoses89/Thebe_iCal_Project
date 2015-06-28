@@ -36,17 +36,20 @@ public class Thebe_iCal {
 		String sEndTime = "";
 		//Current time and date
 		String sCurrentTime = "";
-		//sentinel value
-		boolean bContinue = false;
+		//User's choice
+		int iChoice;
 		
 		String[] sTime = {"0000", "0100", "0200", "0300", "0400", "0500", "0600", "0700", "1000", "1100", "1200", "1300", "1400", "1500", "1600", "1700", "1800", "1900", "2000", "2100", "2200", "2300"};
+		String[] sDay = {"1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12", "13", "14", "15", "16", "17", "18", "19", "20", "21", "22", "23", "24", "25", "26", "27", "28", "29", "30", "31"};
 		String[] sMonth = {"01", "02", "03", "04", "05", "06", "07", "08", "09", "10", "11", "12"};
 		String[] sYear = {"2015", "2016", "2017", "2018", "2019", "2020"};
 		
 		JComboBox jStartTime = new JComboBox(sTime);
+		JComboBox jStartDay = new JComboBox(sDay);
 		JComboBox jStartMonth = new JComboBox(sMonth);
 		JComboBox jStartYear = new JComboBox(sYear);
 		JComboBox jEndTime = new JComboBox(sTime);
+		JComboBox jEndDay = new JComboBox(sDay);
 		JComboBox jEndMonth = new JComboBox(sMonth);
 		JComboBox jEndYear = new JComboBox(sYear);
 		
@@ -58,30 +61,35 @@ public class Thebe_iCal {
 			"Subject", fSubject,
 			"Location", fLocation,
 			"Description", fDescription,
-			"Start Years", jStartYear,
-			"Start Months", jStartMonth,
-			"Start Time", jStartTime,
-			"End Years", jEndYear,
-			"End Months", jEndMonth,
-			"End Time", jEndTime
+			"Start Year:", jStartYear,
+			"Month", jStartMonth,
+			"Day", jStartDay,
+			"Time", jStartTime,
+			"End Year:", jEndYear,
+			"Month", jEndMonth,
+			"Day", jEndDay,
+			"Time", jEndTime
 		};
 		
-		JOptionPane.showConfirmDialog(null, fields, "iCal Event Creator", JOptionPane.OK_CANCEL_OPTION);
+		iChoice = JOptionPane.showConfirmDialog(null, fields, "iCal Event Creator", JOptionPane.OK_CANCEL_OPTION);
 		
 		sSubject = fSubject.getText();
 		sLocation = fLocation.getText();
 		sBody = fDescription.getText();
 		sStartYear = jStartYear.getSelectedItem().toString();
 		sStartMonth = jStartMonth.getSelectedItem().toString();
+		sStartDay = jStartDay.getSelectedItem().toString();
 		sStartTime = jStartTime.getSelectedItem().toString();
 		sEndYear = jEndYear.getSelectedItem().toString();
 		sEndMonth = jEndMonth.getSelectedItem().toString();
+		sEndDay = jEndDay.getSelectedItem().toString();
 		sEndTime = jEndTime.getSelectedItem().toString();
 		
 		sCurrentTime = LocalDateTime.now().toString();
 		
 		System.out.println(sCurrentTime);
 		
+		if (iChoice == 0) {
 		//initializes fileWriter
 		PrintWriter fileWriter = null;
 		try {
@@ -106,9 +114,9 @@ public class Thebe_iCal {
 					+ "CLASS:PUBLIC\n"
 					+ "CREATED:20150627T031544Z\n"
 					+ "DESCRIPTION:" + sBody + "\\n\n"
-					+ "DTEND;TZID=\"Hawaiian Standard Time\":" + sEndYear + sEndMonth + "T" + sEndTime + "00\n"
+					+ "DTEND;TZID=\"Hawaiian Standard Time\":" + sEndYear + sEndMonth + sStartDay + "T" + sEndTime + "00\n"
 					+ "DTSTAMP:20150627T031544Z\n"
-					+ "DTSTART;TZID=\"Hawaiian Standard Time\":" + sStartYear + sStartMonth + "T" + sStartTime + "00\n"
+					+ "DTSTART;TZID=\"Hawaiian Standard Time\":" + sStartYear + sStartMonth + sEndDay + "T" + sStartTime + "00\n"
 					+ "LAST-MODIFIED:20150627T031544Z\n"
 					+ "LOCATION:" + sLocation + "\n"
 					+ "PRIORITY:5\n"
@@ -144,9 +152,13 @@ public class Thebe_iCal {
 		catch (FileNotFoundException fnf) {
 			JOptionPane.showMessageDialog(null, "The file could not be found!");
 		}
+		
 		//displays message if file was written successfully check if changes were made
-		JOptionPane.showMessageDialog(null,"Content has been successfully written to file!");
-
+		JOptionPane.showMessageDialog(null,"Your .ics file has been successfully created!");
+		}//end if statement
+		else {
+			JOptionPane.showMessageDialog(null,"Unsaved changes!");
+		}
 	}//end main() arg
 
 }//ends Public Class Thebe_iCal
