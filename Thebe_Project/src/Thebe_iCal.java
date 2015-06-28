@@ -2,6 +2,7 @@ import java.util.*;
 import java.io.*;
 import javax.swing.JOptionPane;
 import javax.swing.JTextField;
+import javax.swing.*;
 
 /**
  * 6/27/2015
@@ -32,6 +33,17 @@ public class Thebe_iCal {
 		//sentinel value
 		boolean bContinue = false;
 		
+		String[] sTimes = {"0000", "0100", "0200", "0300", "0400", "0500", "0600", "0700", "1000", "1100", "1200", "1300", "1400", "1500", "1600", "1700", "1800", "1900", "2000", "2100", "2200", "2300"};
+		String[] sMonths = {"01", "02", "03", "04", "05", "06", "07", "08", "09", "10", "11", "12"};
+		Integer[] iYears = {2015, 2016, 2017, 2018, 2019, 2020};
+		
+		JComboBox jStartTime = new JComboBox(sTimes);
+		JComboBox jStartMonths = new JComboBox(sMonths);
+		JComboBox jStartYears = new JComboBox(iYears);
+		JComboBox jEndTime = new JComboBox(sTimes);
+		JComboBox jEndMonths = new JComboBox(sMonths);
+		JComboBox jEndYears = new JComboBox(iYears);
+		
 		JTextField fSubject = new JTextField();
 		JTextField fLocation = new JTextField();
 		JTextField fDescription = new JTextField();
@@ -39,7 +51,13 @@ public class Thebe_iCal {
 		Object[] fields = {
 			"Subject", fSubject,
 			"Location", fLocation,
-			"Description", fDescription
+			"Description", fDescription,
+			"Start Years", jStartYears,
+			"Start Months", jStartMonths,
+			"Start Time", jStartTime,
+			"End Years", jEndYears,
+			"End Months", jEndMonths,
+			"End Time", jEndTime
 		};
 		
 		JOptionPane.showConfirmDialog(null, fields, "iCal Event Creator", JOptionPane.OK_CANCEL_OPTION);
