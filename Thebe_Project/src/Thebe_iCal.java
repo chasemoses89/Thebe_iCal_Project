@@ -36,6 +36,8 @@ public class Thebe_iCal {
 		String sEndTime = "";
 		//Current time and date
 		String sCurrentTime = "";
+		//Event class
+		String sClass = "";
 		//User's choice
 		int iChoice;
 		
@@ -43,6 +45,7 @@ public class Thebe_iCal {
 		String[] sDay = {"1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12", "13", "14", "15", "16", "17", "18", "19", "20", "21", "22", "23", "24", "25", "26", "27", "28", "29", "30", "31"};
 		String[] sMonth = {"01", "02", "03", "04", "05", "06", "07", "08", "09", "10", "11", "12"};
 		String[] sYear = {"2015", "2016", "2017", "2018", "2019", "2020"};
+		String[] sClasses = {"PUBLIC", "PRIVATE", "CONFIDENTIAL"};
 		
 		JComboBox jStartTime = new JComboBox(sTime);
 		JComboBox jStartDay = new JComboBox(sDay);
@@ -52,6 +55,7 @@ public class Thebe_iCal {
 		JComboBox jEndDay = new JComboBox(sDay);
 		JComboBox jEndMonth = new JComboBox(sMonth);
 		JComboBox jEndYear = new JComboBox(sYear);
+		JComboBox jClasses = new JComboBox(sClasses);
 		
 		JTextField fSubject = new JTextField();
 		JTextField fLocation = new JTextField();
@@ -61,6 +65,7 @@ public class Thebe_iCal {
 			"Subject", fSubject,
 			"Location", fLocation,
 			"Description", fDescription,
+			"Event Class", jClasses,
 			"Start Year:", jStartYear,
 			"Month", jStartMonth,
 			"Day", jStartDay,
@@ -84,6 +89,7 @@ public class Thebe_iCal {
 		sEndMonth = jEndMonth.getSelectedItem().toString();
 		sEndDay = jEndDay.getSelectedItem().toString();
 		sEndTime = jEndTime.getSelectedItem().toString();
+		sClass = jClasses.getSelectedItem().toString();
 		
 		sCurrentTime = LocalDateTime.now().toString();
 		
@@ -111,7 +117,7 @@ public class Thebe_iCal {
 					+ "END:STANDARD\n"
 					+ "END:VTIMEZONE\n"
 					+ "BEGIN:VEVENT\n"
-					+ "CLASS:PUBLIC\n"
+					+ "CLASS:" + sClass + "\n"
 					+ "CREATED:20150627T031544Z\n"
 					+ "DESCRIPTION:" + sBody + "\\n\n"
 					+ "DTEND;TZID=\"Hawaiian Standard Time\":" + sEndYear + sEndMonth + sStartDay + "T" + sEndTime + "00\n"
