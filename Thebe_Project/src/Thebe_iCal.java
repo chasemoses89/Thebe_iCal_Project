@@ -5,7 +5,7 @@ import java.io.*;
 import javax.swing.*;
 
 /**
- * 6/27/2015
+ * 
  * @author Igeta, David
  * Thebe_iCal Team Project
  */
@@ -34,19 +34,31 @@ public class Thebe_iCal {
 		String sEndYear = "";
 		//End time event ends
 		String sEndTime = "";
-		//Current time and date
-		String sCurrentTime = "";
 		//Event class
 		String sClass = "";
-		//User's choice
-		int iChoice;
+		//system current date
+		String Sysdate = LocalDateTime.now().toString();
+		//current date and time
+		String sCurrentTime = Thebe_iCal.sSystemDate(Sysdate);
+		//longitude of location
+		Float GeoLat = 37.386013f;
+		//latitude of location
+		Float GeoLong = 122.082932f;
+		//User's choice for window 1
+		int iChoice = -1;
+		//sentinel value
+		boolean bValid = false;
+		//indicates if a valid geographic position was entered
+		boolean bGeoPos = false;
 		
-		String[] sTime = {"0000", "0100", "0200", "0300", "0400", "0500", "0600", "0700", "1000", "1100", "1200", "1300", "1400", "1500", "1600", "1700", "1800", "1900", "2000", "2100", "2200", "2300"};
+		//instantiates the drop down menu lists
+		String[] sTime = {"0000", "0100", "0200", "0300", "0400", "0500", "0600", "0700", "0800", "0900", "1000", "1100", "1200", "1300", "1400", "1500", "1600", "1700", "1800", "1900", "2000", "2100", "2200", "2300"};
 		String[] sDay = {"1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12", "13", "14", "15", "16", "17", "18", "19", "20", "21", "22", "23", "24", "25", "26", "27", "28", "29", "30", "31"};
 		String[] sMonth = {"01", "02", "03", "04", "05", "06", "07", "08", "09", "10", "11", "12"};
 		String[] sYear = {"2015", "2016", "2017", "2018", "2019", "2020"};
 		String[] sClasses = {"PUBLIC", "PRIVATE", "CONFIDENTIAL"};
 		
+		//instantiates all the drop down menu items
 		JComboBox jStartTime = new JComboBox(sTime);
 		JComboBox jStartDay = new JComboBox(sDay);
 		JComboBox jStartMonth = new JComboBox(sMonth);
@@ -57,10 +69,14 @@ public class Thebe_iCal {
 		JComboBox jEndYear = new JComboBox(sYear);
 		JComboBox jClasses = new JComboBox(sClasses);
 		
+		//instantiates all the text fields
 		JTextField fSubject = new JTextField();
 		JTextField fLocation = new JTextField();
 		JTextField fDescription = new JTextField();
+		JTextField fGeoLat = new JTextField();
+		JTextField fGeoLong = new JTextField();
 		
+		//instantiates an array of fields
 		Object[] fields = {
 			"Subject", fSubject,
 			"Location", fLocation,
@@ -73,11 +89,19 @@ public class Thebe_iCal {
 			"End Year:", jEndYear,
 			"Month", jEndMonth,
 			"Day", jEndDay,
-			"Time", jEndTime
+			"Time", jEndTime,
 		};
 		
+		//displays the iCal Event Creator window to the user
 		iChoice = JOptionPane.showConfirmDialog(null, fields, "iCal Event Creator", JOptionPane.OK_CANCEL_OPTION);
 		
+		//terminates program if user does not click 'OK'
+		if (iChoice != 0) {
+			JOptionPane.showMessageDialog(null, "File has not been written.");
+			System.exit(1);
+		}
+		
+		//retrieves input from user and assigns to variables
 		sSubject = fSubject.getText();
 		sLocation = fLocation.getText();
 		sBody = fDescription.getText();
@@ -91,11 +115,49 @@ public class Thebe_iCal {
 		sEndTime = jEndTime.getSelectedItem().toString();
 		sClass = jClasses.getSelectedItem().toString();
 		
-		sCurrentTime = LocalDateTime.now().toString();
+		//instantiates another array of object to display geographic position fields
+		Object[] GeoFields = {
+				"Geo Latitude", fGeoLat,
+				"Geo Longitude", fGeoLong
+		};
 		
-		System.out.println(sCurrentTime);
+		//asks user if they wish to enter a geographic position for their event
+		iChoice = JOptionPane.showConfirmDialog(null, "Do you want to enter a geographic position?");
 		
-		if (iChoice == 0) {
+		//display input window for geographic position if the user selects 'OK'
+		if(iChoice == 0) {	
+			
+			//continues to display window until valid coordinates are entered
+			while(!bValid) {
+				try {
+					//displays geographic position entry window
+					iChoice = JOptionPane.showConfirmDialog(null, GeoFields, "Geographic Position", JOptionPane.OK_CANCEL_OPTION);
+					//if user selects 'OK' then attempt to parse input to a float
+					if(iChoice == 0) {
+						GeoLat = Float.parseFloat(fGeoLat.getText());
+						GeoLong = Float.parseFloat(fGeoLong.getText());
+						bValid = true;
+						bGeoPos = true;
+					}
+					//if user attempts to cancel or exit window
+					if(iChoice == 2 || iChoice == -1) {
+						//exits while loop
+						bValid = true;
+					}
+				}
+				//exeception thrown if input cannot be parsed into a float data type
+				catch (NumberFormatException nfe) {
+					JOptionPane.showMessageDialog(null, "Please enter valid coordinates.");
+				}
+			}//end while
+		}//end if
+		
+		//prints file if user selects 'NO'
+		if(iChoice == 1) {
+			bValid = true;
+		}
+		
+		if (bValid == true) {
 		//initializes fileWriter
 		PrintWriter fileWriter = null;
 		try {
@@ -118,13 +180,17 @@ public class Thebe_iCal {
 					+ "END:VTIMEZONE\n"
 					+ "BEGIN:VEVENT\n"
 					+ "CLASS:" + sClass + "\n"
-					+ "CREATED:20150627T031544Z\n"
+					+ "CREATED:" + sCurrentTime + "\n"
 					+ "DESCRIPTION:" + sBody + "\\n\n"
 					+ "DTEND;TZID=\"Hawaiian Standard Time\":" + sEndYear + sEndMonth + sStartDay + "T" + sEndTime + "00\n"
-					+ "DTSTAMP:20150627T031544Z\n"
+					+ "DTSTAMP:" + sCurrentTime + "\n"
 					+ "DTSTART;TZID=\"Hawaiian Standard Time\":" + sStartYear + sStartMonth + sEndDay + "T" + sStartTime + "00\n"
-					+ "LAST-MODIFIED:20150627T031544Z\n"
-					+ "LOCATION:" + sLocation + "\n"
+					+ "LAST-MODIFIED:" + sCurrentTime);
+			//prints the geographic position line only if valid coordinates were entered
+			if(bGeoPos == true) {
+				fileWriter.println("GEO:" + GeoLat + ";" + GeoLong);
+			}
+			fileWriter.println("LOCATION:" + sLocation + "\n"
 					+ "PRIORITY:5\n"
 					+ "SEQUENCE:0\n"
 					+ "SUMMARY;LANGUAGE=en-us:" + sSubject + "\n"
@@ -163,8 +229,40 @@ public class Thebe_iCal {
 		JOptionPane.showMessageDialog(null,"Your .ics file has been successfully created!");
 		}//end if statement
 		else {
-			JOptionPane.showMessageDialog(null,"Unsaved changes!");
+			JOptionPane.showMessageDialog(null,"File has not been written.");
 		}
+		
 	}//end main() arg
+	
+	/**
+	 * method to format the current system date
+	 * @param sSysdate
+	 * @return sSysdate the system's current date formatted for the .ics file
+	 */
+	public static String sSystemDate (String SystemDate) {
+		//instantiates current time variable to be returned
+		String sCurrentTime = "";
+		//instantiates length of the system date
+		int iLen = SystemDate.length();
+		//instantiates variable to hold each char of system date
+		String sChar = "";
+		System.out.println(SystemDate);
+		//loops through the system date to remove any special characters
+		for (int i = 0; i < iLen; i++) {
+			sChar = SystemDate.substring(i, i + 1);
+			//removes special characters
+			if(sChar.equals("-") || sChar.equals(":") || sChar.equals(".")) {
+				i++;
+			}
+			//concatentates string if not special character
+			else {
+				sCurrentTime = sCurrentTime + sChar;
+			}
+		}
+		//concatenates the "Z" at the end of the time
+		sCurrentTime = sCurrentTime + "Z";
+			
+		return sCurrentTime;
+	}//end sSystemDate method
 
 }//ends Public Class Thebe_iCal
