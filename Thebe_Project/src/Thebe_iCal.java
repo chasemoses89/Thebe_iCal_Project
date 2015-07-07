@@ -1,5 +1,4 @@
 import java.time.LocalDateTime;
-import java.util.*;
 import java.io.*;
 
 import javax.swing.*;
@@ -41,19 +40,19 @@ public class Thebe_iCal {
 		//current date and time
 		String sCurrentTime = Thebe_iCal.sSystemDate(Sysdate);
 		//longitude of location
-		Float GeoLat = 37.386013f;
+		Float GeoLat = 21.4667f;
 		//latitude of location
-		Float GeoLong = 122.082932f;
+		Float GeoLong = 157.9833f;
 		//User's choice for window 1
 		int iChoice = -1;
 		//sentinel value
 		boolean bValid = false;
 		//indicates if a valid geographic position was entered
 		boolean bGeoPos = false;
-		
+
 		//instantiates the drop down menu lists
 		String[] sTime = {"0000", "0100", "0200", "0300", "0400", "0500", "0600", "0700", "0800", "0900", "1000", "1100", "1200", "1300", "1400", "1500", "1600", "1700", "1800", "1900", "2000", "2100", "2200", "2300"};
-		String[] sDay = {"1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12", "13", "14", "15", "16", "17", "18", "19", "20", "21", "22", "23", "24", "25", "26", "27", "28", "29", "30", "31"};
+		String[] sDay = {"01", "02", "03", "04", "05", "06", "07", "08", "09", "10", "11", "12", "13", "14", "15", "16", "17", "18", "19", "20", "21", "22", "23", "24", "25", "26", "27", "28", "29", "30", "31"};
 		String[] sMonth = {"01", "02", "03", "04", "05", "06", "07", "08", "09", "10", "11", "12"};
 		String[] sYear = {"2015", "2016", "2017", "2018", "2019", "2020"};
 		String[] sClasses = {"PUBLIC", "PRIVATE", "CONFIDENTIAL"};
@@ -97,7 +96,7 @@ public class Thebe_iCal {
 		
 		//terminates program if user does not click 'OK'
 		if (iChoice != 0) {
-			JOptionPane.showMessageDialog(null, "File has not been written.");
+			JOptionPane.showMessageDialog(null, "iCal Event has not been created.");
 			System.exit(1);
 		}
 		
@@ -147,7 +146,10 @@ public class Thebe_iCal {
 				}
 				//exeception thrown if input cannot be parsed into a float data type
 				catch (NumberFormatException nfe) {
-					JOptionPane.showMessageDialog(null, "Please enter valid coordinates.");
+					JOptionPane.showMessageDialog(null, "Invalid coordinates. Click 'Cancel' or close window \nto continue without geographic position.");
+					//resets value of coordinates
+					GeoLat = null;
+					GeoLong = null;
 				}
 			}//end while
 		}//end if
@@ -178,9 +180,11 @@ public class Thebe_iCal {
 					+ "TZOFFSETTO:-1000\n"
 					+ "END:STANDARD\n"
 					+ "END:VTIMEZONE\n"
-					+ "BEGIN:VEVENT\n"
-					+ "CLASS:" + sClass + "\n"
-					+ "CREATED:" + sCurrentTime + "\n"
+					+ "BEGIN:VEVENT");
+			if(sClass.trim().length() > 0) {
+				fileWriter.println("CLASS:" + sClass);
+			}
+			fileWriter.println("CREATED:" + sCurrentTime + "\n"
 					+ "DESCRIPTION:" + sBody + "\\n\n"
 					+ "DTEND;TZID=\"Hawaiian Standard Time\":" + sEndYear + sEndMonth + sStartDay + "T" + sEndTime + "00\n"
 					+ "DTSTAMP:" + sCurrentTime + "\n"
@@ -190,29 +194,17 @@ public class Thebe_iCal {
 			if(bGeoPos == true) {
 				fileWriter.println("GEO:" + GeoLat + ";" + GeoLong);
 			}
-			fileWriter.println("LOCATION:" + sLocation + "\n"
-					+ "PRIORITY:5\n"
-					+ "SEQUENCE:0\n"
-					+ "SUMMARY;LANGUAGE=en-us:" + sSubject + "\n"
-					+ "TRANSP:OPAQUE\n"
+			if(sLocation.trim().length() > 0) {
+				fileWriter.println("LOCATION:" + sLocation);
+			}
+			fileWriter.println("PRIORITY:5\n"
+					+ "SEQUENCE:0");
+			if(sSubject.trim().length() > 0) {
+				fileWriter.println("SUMMARY;LANGUAGE=en-us:" + sSubject);
+			}
+			fileWriter.println("TRANSP:OPAQUE\n"
 					+ "UID:040000008200E00074C5B7101A82E00800000000407663BC33B0D001000000000000000\n"
 					+ "\t010000000109752F585EB3B448B59159DFD3CF4D2\n"
-					//+ "X-ALT-DESC;FMTTYPE=text/html:<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 3.2//E\n"
-					//+ "\tN\">\\n<HTML>\\n<HEAD>\\n<META NAME=\"Generator\" CONTENT=\"MS Exchange Server ve\n"
-					//+ "\trsion 14.02.5004.000\">\\n<TITLE></TITLE>\\n</HEAD>\\n<BODY>\\n<!-- Converted f\n"
-					//+ "\trom text/rtf format -->\\n\\n<P DIR=LTR><SPAN LANG=\"en-us\"><FONT FACE=\"Calib\n"
-					//+ "\tri\">This is an example of sample text in the body of an appointment.</FONT\n"
-					//+ "\t></SPAN><SPAN LANG=\"en-us\"> </SPAN></P>\\n\\n</BODY>\\n</HTML>\n"
-					//+ "X-MICROSOFT-CDO-BUSYSTATUS:BUSY\n"
-					//+ "X-MICROSOFT-CDO-IMPORTANCE:1\n"
-					//+ "X-MICROSOFT-DISALLOW-COUNTER:FALSE\n"
-					//+ "X-MS-OLK-AUTOFILLLOCATION:FALSE\n"
-					//+ "X-MS-OLK-CONFTYPE:0\n"
-					//+ "BEGIN:VALARM\n"
-					//+ "TRIGGER:-PT15M\n"
-					//+ "ACTION:DISPLAY\n"
-					//+ "DESCRIPTION:Reminder\n"
-					//+ "END:VALARM\n"
 					+ "END:VEVENT\n"
 					+ "END:VCALENDAR");
 			
@@ -226,10 +218,10 @@ public class Thebe_iCal {
 		}
 		
 		//displays message if file was written successfully check if changes were made
-		JOptionPane.showMessageDialog(null,"Your .ics file has been successfully created!");
+		JOptionPane.showMessageDialog(null,"Your event has been successfully created!");
 		}//end if statement
 		else {
-			JOptionPane.showMessageDialog(null,"File has not been written.");
+			JOptionPane.showMessageDialog(null,"iCal Event has not been created.");
 		}
 		
 	}//end main() arg
@@ -246,13 +238,13 @@ public class Thebe_iCal {
 		int iLen = SystemDate.length();
 		//instantiates variable to hold each char of system date
 		String sChar = "";
-		System.out.println(SystemDate);
+		
 		//loops through the system date to remove any special characters
 		for (int i = 0; i < iLen; i++) {
 			sChar = SystemDate.substring(i, i + 1);
 			//removes special characters
 			if(sChar.equals("-") || sChar.equals(":") || sChar.equals(".")) {
-				i++;
+				//do nothing
 			}
 			//concatentates string if not special character
 			else {
@@ -260,7 +252,7 @@ public class Thebe_iCal {
 			}
 		}
 		//concatenates the "Z" at the end of the time
-		sCurrentTime = sCurrentTime + "Z";
+		//sCurrentTime = sCurrentTime + "Z";
 			
 		return sCurrentTime;
 	}//end sSystemDate method
