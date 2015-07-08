@@ -319,9 +319,9 @@ public class Thebe_iCal {
 	 */
 	public static boolean CheckBacktrack (String sYearStart, String sYearEnd, String sMonthStart, String sMonthEnd, String sDayStart, String sDayEnd, String sTimeStart, String sTimeEnd) {
 		if((Integer.parseInt(sYearStart) > Integer.parseInt(sYearEnd))
-		|| (Integer.parseInt(sYearStart) > Integer.parseInt(sYearEnd)) && (Integer.parseInt(sMonthStart) > Integer.parseInt(sMonthEnd))
-		|| (Integer.parseInt(sMonthStart) > Integer.parseInt(sMonthEnd)) && (Integer.parseInt(sDayStart) > Integer.parseInt(sDayEnd))
-		|| (Integer.parseInt(sYearStart) > Integer.parseInt(sYearEnd)) && (Integer.parseInt(sMonthStart) > Integer.parseInt(sMonthEnd)) && (Integer.parseInt(sDayStart) > Integer.parseInt(sDayEnd)) && (Integer.parseInt(sTimeStart) > Integer.parseInt(sTimeEnd))) {
+		|| (Integer.parseInt(sYearStart) >= Integer.parseInt(sYearEnd)) && (Integer.parseInt(sMonthStart) > Integer.parseInt(sMonthEnd))
+		|| (Integer.parseInt(sYearStart) >= Integer.parseInt(sYearEnd)) && (Integer.parseInt(sMonthStart) >= Integer.parseInt(sMonthEnd)) && (Integer.parseInt(sDayStart) > Integer.parseInt(sDayEnd))
+		|| (Integer.parseInt(sYearStart) >= Integer.parseInt(sYearEnd)) && (Integer.parseInt(sMonthStart) >= Integer.parseInt(sMonthEnd)) && (Integer.parseInt(sDayStart) >= Integer.parseInt(sDayEnd)) && (Integer.parseInt(sTimeStart) > Integer.parseInt(sTimeEnd))) {
 			return false;
 		}
 		else {
