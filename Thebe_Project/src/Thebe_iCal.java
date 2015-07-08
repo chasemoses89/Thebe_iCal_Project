@@ -3,12 +3,16 @@ import java.io.*;
 import javax.swing.*;
 
 /**
- * 
- * @author Igeta, David
+ * This program creates an ics file that is compatible with MS Outlook and Gmail.
+ * @author Lee, Chase; Hsu, Jon; Igeta, David
  * Thebe_iCal Team Project
  */
 public class Thebe_iCal {
-
+	
+	/**
+	 * This is the main() method of the program
+	 * @param args
+	 */
 	public static void main(String[] args) {
 		//Event subject line
 		String sSubject = "";
@@ -44,10 +48,14 @@ public class Thebe_iCal {
 		Float GeoLong = 157.9833f;
 		//User's choice for window 1
 		int iChoice = -1;
-		//sentinel value
+		//sentinel value for loops
 		boolean bValid = false;
 		//indicates if a valid geographic position was entered
 		boolean bGeoPos = false;
+		//states if end date/time is less than the start date/time
+		boolean bValidTimeFrame;
+		//states if day is valid based on month an leap year
+		boolean bValidDate;
 
 		//instantiates the drop down menu lists
 		String[] sTime = {"0000", "0100", "0200", "0300", "0400", "0500", "0600", "0700", "0800", "0900", "1000", "1100", "1200", "1300", "1400", "1500", "1600", "1700", "1800", "1900", "2000", "2100", "2200", "2300"};
@@ -113,6 +121,47 @@ public class Thebe_iCal {
 		sEndTime = jEndTime.getSelectedItem().toString();
 		sClass = jClasses.getSelectedItem().toString();
 		
+		//instantiates boolean variable by called methods to be used in the while statement below
+		bValidTimeFrame = Thebe_iCal.CheckBacktrack(sStartYear, sEndYear, sStartMonth, sEndMonth, sStartDay, sEndDay, sStartTime, sEndTime);
+		bValidDate = Thebe_iCal.CheckDate(sStartYear, sEndYear, sStartMonth, sEndMonth, sStartDay, sEndDay, sStartTime, sEndTime);
+		
+		//shows error messages if either CheckBacktrack()method or CheckDate() method returns false
+		while (!bValidTimeFrame || !bValidDate) {
+			//shows this message if CheckBacktrack method returns false
+			if(bValidTimeFrame == false) {
+				JOptionPane.showMessageDialog(null, "The end date you entered occurs before the start date.");
+			}
+			//shows this message if CheckDate method returns false
+			else if(bValidDate == false) {
+				JOptionPane.showMessageDialog(null, "Please enter a valid day for the selected month.");
+			}
+			//displays the iCal Event Creator window to the user
+			iChoice = JOptionPane.showConfirmDialog(null, fields, "iCal Event Creator", JOptionPane.OK_CANCEL_OPTION);
+			
+			//terminates program if user does not click 'OK'
+			if (iChoice != 0) {
+				JOptionPane.showMessageDialog(null, "iCal Event has not been created.");
+				System.exit(1);
+			}
+			//retrieves input from user and assigns to variables
+			sSubject = fSubject.getText();
+			sLocation = fLocation.getText();
+			sBody = fDescription.getText();
+			sStartYear = jStartYear.getSelectedItem().toString();
+			sStartMonth = jStartMonth.getSelectedItem().toString();
+			sStartDay = jStartDay.getSelectedItem().toString();
+			sStartTime = jStartTime.getSelectedItem().toString();
+			sEndYear = jEndYear.getSelectedItem().toString();
+			sEndMonth = jEndMonth.getSelectedItem().toString();
+			sEndDay = jEndDay.getSelectedItem().toString();
+			sEndTime = jEndTime.getSelectedItem().toString();
+			sClass = jClasses.getSelectedItem().toString();
+			
+			//call methods again to see if they return true or false
+			bValidTimeFrame = Thebe_iCal.CheckBacktrack(sStartYear, sEndYear, sStartMonth, sEndMonth, sStartDay, sEndDay, sStartTime, sEndTime);
+			bValidDate = Thebe_iCal.CheckDate(sStartYear, sEndYear, sStartMonth, sEndMonth, sStartDay, sEndDay, sStartTime, sEndTime);
+		}
+		
 		//instantiates another array of object to display geographic position fields
 		Object[] GeoFields = {
 				"Geo Latitude", fGeoLat,
@@ -134,7 +183,9 @@ public class Thebe_iCal {
 					if(iChoice == 0) {
 						GeoLat = Float.parseFloat(fGeoLat.getText());
 						GeoLong = Float.parseFloat(fGeoLong.getText());
+						//exits loop
 						bValid = true;
+						//indicates that valid coordinates have been entered
 						bGeoPos = true;
 					}
 					//if user attempts to cancel or exit window
@@ -180,9 +231,11 @@ public class Thebe_iCal {
 					+ "END:STANDARD\n"
 					+ "END:VTIMEZONE\n"
 					+ "BEGIN:VEVENT");
+			//only writes the class syntax if the field has been entered
 			if(sClass.trim().length() > 0) {
 				fileWriter.println("CLASS:" + sClass);
 			}
+			//only writes the created syntax if the field has been entered
 			fileWriter.println("CREATED:" + sCurrentTime + "\n"
 					+ "DESCRIPTION:" + sBody + "\\n\n"
 					+ "DTEND;TZID=\"Hawaiian Standard Time\":" + sEndYear + sEndMonth + sStartDay + "T" + sEndTime + "00\n"
@@ -193,11 +246,13 @@ public class Thebe_iCal {
 			if(bGeoPos == true) {
 				fileWriter.println("GEO:" + GeoLat + ";" + GeoLong);
 			}
+			//only writes the location syntax if the field has been entered
 			if(sLocation.trim().length() > 0) {
 				fileWriter.println("LOCATION:" + sLocation);
 			}
 			fileWriter.println("PRIORITY:5\n"
 					+ "SEQUENCE:0");
+			//only writes the subject syntax if the field has been entered
 			if(sSubject.trim().length() > 0) {
 				fileWriter.println("SUMMARY;LANGUAGE=en-us:" + sSubject);
 			}
@@ -255,5 +310,73 @@ public class Thebe_iCal {
 			
 		return sCurrentTime;
 	}//end sSystemDate method
-
+	
+	/**
+	 * This method checks if the end date is less than the start date.
+	 * @param sValidStart
+	 * @param sValidEnd
+	 * @return
+	 */
+	public static boolean CheckBacktrack (String sYearStart, String sYearEnd, String sMonthStart, String sMonthEnd, String sDayStart, String sDayEnd, String sTimeStart, String sTimeEnd) {
+		if((Integer.parseInt(sYearStart) > Integer.parseInt(sYearEnd))
+		|| (Integer.parseInt(sYearStart) > Integer.parseInt(sYearEnd)) && (Integer.parseInt(sMonthStart) > Integer.parseInt(sMonthEnd))
+		|| (Integer.parseInt(sMonthStart) > Integer.parseInt(sMonthEnd)) && (Integer.parseInt(sDayStart) > Integer.parseInt(sDayEnd))
+		|| (Integer.parseInt(sYearStart) > Integer.parseInt(sYearEnd)) && (Integer.parseInt(sMonthStart) > Integer.parseInt(sMonthEnd)) && (Integer.parseInt(sDayStart) > Integer.parseInt(sDayEnd)) && (Integer.parseInt(sTimeStart) > Integer.parseInt(sTimeEnd))) {
+			return false;
+		}
+		else {
+			return true;
+		}
+	}//end CheckBacktrack method
+	
+	/**
+	 * Checks if a valid day is entered for a particular month
+	 * @param sYearStart
+	 * @param sYearEnd
+	 * @param sMonthStart
+	 * @param sMonthEnd
+	 * @param sDayStart
+	 * @param sDayEnd
+	 * @param sTimeStart
+	 * @param sTimeEnd
+	 * @return
+	 */
+	public static boolean CheckDate (String sYearStart, String sYearEnd, String sMonthStart, String sMonthEnd, String sDayStart, String sDayEnd, String sTimeStart, String sTimeEnd) {
+		int iFeb = 2; //29 days
+		int iApr = 4; //30 days
+		int iJun = 6; //30 days
+		int iSep = 9; //30 days
+		int iNov = 11; //30 days
+		int iShort = 29; //case where month is 29 days
+		int iLong = 30; //case where month is 30 days
+		
+		//checks if user enters a day greater than 29 or 30 for the month of Feb 
+		if((Integer.parseInt(sMonthStart) == iFeb && Integer.parseInt(sDayStart) > iShort)
+				|| (Integer.parseInt(sMonthEnd) == iFeb && Integer.parseInt(sDayEnd) > iShort)
+				|| (Integer.parseInt(sMonthStart) == iFeb && Integer.parseInt(sDayStart) > iShort)
+				|| (Integer.parseInt(sMonthEnd) == iFeb && Integer.parseInt(sDayEnd) > iShort)) {	
+			return false;
+		}
+		//checks if user enters a day greater than 30 for the months of Apr, Jun, Sep, Nov 
+				if((Integer.parseInt(sMonthStart) == iApr && Integer.parseInt(sDayStart) > iLong)
+						|| (Integer.parseInt(sMonthEnd) == iApr && Integer.parseInt(sDayEnd) > iLong)
+						|| (Integer.parseInt(sMonthStart) == iApr && Integer.parseInt(sDayStart) > iLong)
+						|| (Integer.parseInt(sMonthEnd) == iApr && Integer.parseInt(sDayEnd) > iLong)
+						|| (Integer.parseInt(sMonthStart) == iJun && Integer.parseInt(sDayStart) > iLong)
+						|| (Integer.parseInt(sMonthEnd) == iJun && Integer.parseInt(sDayEnd) > iLong)
+						|| (Integer.parseInt(sMonthStart) == iJun && Integer.parseInt(sDayStart) > iLong)
+						|| (Integer.parseInt(sMonthEnd) == iJun && Integer.parseInt(sDayEnd) > iLong)
+						|| (Integer.parseInt(sMonthStart) == iSep && Integer.parseInt(sDayStart) > iLong)
+						|| (Integer.parseInt(sMonthEnd) == iSep && Integer.parseInt(sDayEnd) > iLong)
+						|| (Integer.parseInt(sMonthStart) == iSep && Integer.parseInt(sDayStart) > iLong)
+						|| (Integer.parseInt(sMonthEnd) == iSep && Integer.parseInt(sDayEnd) > iLong)
+						|| (Integer.parseInt(sMonthStart) == iNov && Integer.parseInt(sDayStart) > iLong)
+						|| (Integer.parseInt(sMonthEnd) == iNov && Integer.parseInt(sDayEnd) > iLong)
+						|| (Integer.parseInt(sMonthStart) == iNov && Integer.parseInt(sDayStart) > iLong)
+						|| (Integer.parseInt(sMonthEnd) == iNov && Integer.parseInt(sDayEnd) > iLong)) {	
+					return false;
+				}
+		//returns true if no if statements are executed
+		return true;
+	}
 }//ends Public Class Thebe_iCal
