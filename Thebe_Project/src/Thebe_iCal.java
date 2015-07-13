@@ -50,13 +50,17 @@ public class Thebe_iCal {
 		//Event class
 		String sClass = "";
 		String [] sClassArry = new String[5];
+		double dNauticleMiles;
+		Double [] dStatuteMiles = new Double[5];
+		Double [] dKilometers = new Double[5];
+		double dNautToKilo = 1.852;
+        double dNautToStat = 1.15077944802;
 		//system current date
 		String Sysdate = LocalDateTime.now().toString();
 		//current date and time
 		String sCurrentTime = Thebe_iCal.sSystemDate(Sysdate);
 		//name of the output file
 		String sFileName = "";
-		//String [] sFileNameArry = new String[5];
 		//longitude of location
 		Float GeoLat = 21.4667f;
 		Float[] fLatArray= new Float[5];
@@ -300,12 +304,14 @@ public class Thebe_iCal {
 		}
 		System.out.println("");
 		*/
+		//bubble sort for loop which sorts event files in ascending order based on the sStartTime
 		for(int p = 0; p < i; p++) {
 			
-			
 			for(int n = p + 1; n <= i; n++) {
-				
+				//if the sStartTime is > the subsequent event file's sStartTime then switch all variables
 				if(Integer.parseInt(sStartTimeArry [p]) > Integer.parseInt(sStartTimeArry [n])) {
+					
+					//container variable which holds each variable temporarily
 					sNowTime = sStartTimeArry [n];
 					sPastTime = sStartTimeArry [p];
 					sNowTimeEnd = sEndTimeArry [n];
@@ -348,9 +354,9 @@ public class Thebe_iCal {
 					}
 					System.out.println("");
 					*/
-				}
-			}
-		}
+				}//end if statement
+			}//end inner for loop
+		}//end outer for loop
 		/*
 		System.out.print("Results after exited from loop: \nsStartTimeArry = ");
 		for(int x = 0; x <= i; x++) {
@@ -360,9 +366,10 @@ public class Thebe_iCal {
 		*/
 		//b is the counter which starts from zero and loops through each position in geo arrays
 		for (int b = 0; b < i; b++) {
-			
-         //calculates the great circle distance between two events at a time until i is reached
-		   Thebe_iCal.calculateDistance(fLatArray[b], fLongArray[b], fLatArray[b+1], fLongArray[b+1]);
+			//calculates the great circle distance between two events at a time until i is reached
+			dNauticleMiles = Thebe_iCal.calculateDistance(fLatArray[b], fLongArray[b], fLatArray[b+1], fLongArray[b+1]);
+		    dStatuteMiles[b] = dNauticleMiles * dNautToStat;
+		    dKilometers[b] = dNauticleMiles * dNautToKilo;
 		}
 		
 		//once user is done entering event files prompt user for name of file to be saved
@@ -403,7 +410,9 @@ public class Thebe_iCal {
 					+ "DTSTART;TZID=\"Hawaiian Standard Time\":" + sStartYearArry[c] + sStartMonthArry[c] + sStartDayArry[c] + "T" + sStartTimeArry[c] + "00\n"
 					+ "LAST-MODIFIED:" + sCurrentTime + "\n"
 					+ "GEO:" + fLatArray[c] + ";" + fLongArray[c]);
-               
+                if(dStatuteMiles[c] != null && dKilometers[c] != null) {
+                	fileWriter.println("COMMENT: Statute Miles = " + dStatuteMiles[c] + "; Kilometers = " + dKilometers[c]);
+                }
 				//only writes the location syntax if the field has been entered
 				if(sLocationArry[c].trim().length() > 0) {
 					fileWriter.println("LOCATION:" + sLocationArry[c]);
@@ -551,8 +560,6 @@ public class Thebe_iCal {
         double y1 = Math.toRadians(longitude1);
         double x2 = Math.toRadians(latitude2);
         double y2 = Math.toRadians(longitude2);
-        double dNautToKilo = 1.852;
-        double dNautToStat = 1.15077944802;
 
         // great circle distance in radians
         double angle1 = Math.acos(Math.sin(x1) * Math.sin(x2)
@@ -563,10 +570,6 @@ public class Thebe_iCal {
 
         // each degree on a great circle of Earth is 60 nautical miles
         double distance1 = 60 * angle1;
-     
-        //System.out.println(distance1 + " nautical miles");
-        System.out.println(distance1 * dNautToStat + " statute miles");
-        System.out.println(distance1 * dNautToKilo + " kilometers");
         
         return distance1;
       }  
