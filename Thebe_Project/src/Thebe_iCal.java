@@ -272,17 +272,16 @@ public class Thebe_iCal {
 				bContinue = false;
 			}
 		}//end bContinue while loop
-		/*
+		
+      /*Sort the event files based on their times before you calculate the great circle distances*/
+      
+      //b is the counter which starts from zero and loops through each position in geo arrays
 		for (int b = 0; b < i; b++) {
 			
-			int a = 0;
-			
-			if (((Integer.parseInt(sStartTimeArry [a]) < Integer.parseInt(sStartTimeArry [a+1]))
-					) {
-			}
-			//System.out.println("Distance = " + Thebe_iCal.calculateDistance(fLatArray[b], fLongArray[b], fLatArray[b+1], fLongArray[b+1]));
+         //calculates the great circle distance between two events at a time until i is reached
+		   Thebe_iCal.calculateDistance(fLatArray[b], fLongArray[b], fLatArray[b+1], fLongArray[b+1]);
 		}
-		*/
+		
 		//once user is done entering event files prompt user for name of file to be saved
 		sFileName = JOptionPane.showInputDialog("Please enter a name to save your file.");
 		
@@ -293,7 +292,6 @@ public class Thebe_iCal {
 				//makes connection to fileWriter and output file
 				fileWriter = new PrintWriter(sFileName + "_" + c + ".ics");
 				//begin writing to file
-				//every line that is commented out is optional and can still be read/processed by MS Outlook 2010
 				fileWriter.println("BEGIN:VCALENDAR\n"
 						+ "PRODID:-//Microsoft Corporation//Outlook 14.0 MIMEDIR//EN\n"
 						+ "VERSION:2.0\n"
@@ -317,13 +315,13 @@ public class Thebe_iCal {
 				//only writes the created syntax if the field has been entered
 				fileWriter.println("CREATED:" + sCurrentTime + "\n"
 					+ "DESCRIPTION:" + sBodyArry[c] + "\\n\n"
-					+ "DTEND;TZID=\"Hawaiian Standard Time\":" + sEndYearArry[c] + sEndMonthArry[c] + sStartDayArry[c] + "T" + sEndTimeArry[c] + "00\n"
+					+ "DTEND;TZID=\"Hawaiian Standard Time\":" + sEndYearArry[c] + sEndMonthArry[c] + sEndDayArry[c] + "T" + sEndTimeArry[c] + "00\n"
 					+ "DTSTAMP:" + sCurrentTime + "\n"
-					+ "DTSTART;TZID=\"Hawaiian Standard Time\":" + sStartYearArry[c] + sStartMonthArry[c] + sEndDayArry[c] + "T" + sStartTimeArry[c] + "00\n"
-					+ "LAST-MODIFIED:" + sCurrentTime
+					+ "DTSTART;TZID=\"Hawaiian Standard Time\":" + sStartYearArry[c] + sStartMonthArry[c] + sStartDayArry[c] + "T" + sStartTimeArry[c] + "00\n"
+					+ "LAST-MODIFIED:" + sCurrentTime + "\n"
 					+ "GEO:" + fLatArray[c] + ";" + fLongArray[c]);
+               
 				//only writes the location syntax if the field has been entered
-				
 				if(sLocationArry[c].trim().length() > 0) {
 					fileWriter.println("LOCATION:" + sLocationArry[c]);
 				}
@@ -464,23 +462,30 @@ public class Thebe_iCal {
 	 * @param latitude2
 	 * @param longitude2
 	 * @return
-	 */
-	public static double calculateDistance(float latitude1, float longitude1, float latitude2, float longitude2)
-	  {
-		double radLat1 = Math.toRadians(latitude1);
-		double radLon1 = Math.toRadians(longitude1);
-		double radLat2 = Math.toRadians(latitude2);
-		double radLon2 = Math.toRadians(longitude2);
-		
-		//great circle distance in radians
-		double distanceRadians = Math.acos((Math.cos(radLat1) * Math.cos(radLat2)) + (Math.sin(radLat1) * Math.sin(radLat2))
-	        * (Math.cos(radLon1 - radLon2)));
-		
-		distanceRadians = Math.toDegrees(distanceRadians);
-		
-		double distanceDeg = 60 * distanceRadians;
+	 */ 
+      public static double calculateDistance(float latitude1, float longitude1, float latitude2, float longitude2) { 
+        double x1 = Math.toRadians(latitude1);
+        double y1 = Math.toRadians(longitude1);
+        double x2 = Math.toRadians(latitude2);
+        double y2 = Math.toRadians(longitude2);
+        double dNautToKilo = 1.852;
+        double dNautToStat = 1.15077944802;
 
-	    return distanceDeg;
-	  }
+        // great circle distance in radians
+        double angle1 = Math.acos(Math.sin(x1) * Math.sin(x2)
+                      + Math.cos(x1) * Math.cos(x2) * Math.cos(y1 - y2));
+
+        // convert back to degrees
+        angle1 = Math.toDegrees(angle1);
+
+        // each degree on a great circle of Earth is 60 nautical miles
+        double distance1 = 60 * angle1;
+     
+        //System.out.println(distance1 + " nautical miles");
+        System.out.println(distance1 * dNautToStat + " statute miles");
+        System.out.println(distance1 * dNautToKilo + " kilometers");
+        
+        return distance1;
+      }  
 
 }//ends Public Class Thebe_iCal
