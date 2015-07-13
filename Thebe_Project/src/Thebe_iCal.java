@@ -76,6 +76,8 @@ public class Thebe_iCal {
 		int iContinueProgram;
 		//loop through program again
 		boolean bContinue = true;
+		//valid time
+		boolean bValidTime = false;
 		//initializes fileWriter
 		PrintWriter fileWriter = null;
 
@@ -240,7 +242,7 @@ public class Thebe_iCal {
 			fLongArray [i] = GeoLong;
 			
 			//asks if user wants to create another event file
-			iContinueProgram = JOptionPane.showConfirmDialog(null, "Do you want to enter another event file?");
+			iContinueProgram = JOptionPane.showConfirmDialog(null, "Do you want to create another same-day event?");
 			
 			//if 'Yes' then reset all variable back to original values and increment i counter
 			if (iContinueProgram == 0) {
@@ -273,9 +275,90 @@ public class Thebe_iCal {
 			}
 		}//end bContinue while loop
 		
-      /*Sort the event files based on their times before you calculate the great circle distances*/
-      
-      //b is the counter which starts from zero and loops through each position in geo arrays
+		/*Sort the event files based on their times before you calculate the great circle distances*/
+		String sNowTime = "";
+		String sPastTime = "";
+		String sNowTimeEnd = "";
+		String sPastTimeEnd = "";
+		String sNowSubject = "";
+		String sPastSubject = "";
+		String sNowLocation = "";
+		String sPastLocation = "";
+		String sNowClass = "";
+		String sPastClass = "";
+		String sNowBody = "";
+		String sPastBody = "";
+		Float fNowLat;
+		Float fPastLat;
+		Float fNowLong;
+		Float fPastLong;
+		
+		/*
+		System.out.print("sStartTimeArry = ");
+		for(int x = 0; x <= i; x++) {
+			System.out.print(sStartTimeArry[x] + ", ");
+		}
+		System.out.println("");
+		*/
+		for(int p = 0; p < i; p++) {
+			
+			
+			for(int n = p + 1; n <= i; n++) {
+				
+				if(Integer.parseInt(sStartTimeArry [p]) > Integer.parseInt(sStartTimeArry [n])) {
+					sNowTime = sStartTimeArry [n];
+					sPastTime = sStartTimeArry [p];
+					sNowTimeEnd = sEndTimeArry [n];
+					sPastTimeEnd = sEndTimeArry [p];
+					sNowLocation = sLocationArry [n];
+					sPastLocation = sLocationArry [p];
+					sNowSubject = sSubjectArry [n];
+					sPastSubject = sSubjectArry [p];
+					sNowBody = sBodyArry[n];
+					sPastBody = sBodyArry[p];
+					sNowClass = sClassArry[n];
+					sPastClass = sClassArry[p];
+					fNowLat = fLatArray[n];
+					fPastLat = fLatArray[p];
+					fNowLong = fLongArray[n];
+					fPastLong = fLongArray[p];
+					
+					//switch variables
+					sStartTimeArry [n] = sPastTime;
+					sStartTimeArry [p] = sNowTime;
+					sEndTimeArry [n] = sPastTimeEnd;
+					sEndTimeArry [p] = sNowTimeEnd;
+					sSubjectArry [n] = sPastSubject;
+					sSubjectArry [p] = sNowSubject;
+					sLocationArry [n] = sPastLocation;
+					sLocationArry [p] = sNowLocation;
+					sClassArry [n] = sPastClass;
+					sClassArry [p] = sNowClass;
+					sBodyArry [n] = sPastBody;
+					sBodyArry [p] = sNowBody;
+					fLatArray[n] = fPastLat;
+					fLatArray[p] = fNowLat;
+					fLongArray[n] = fPastLong;
+					fLongArray[p] = fNowLong;
+					
+					/*
+					System.out.print("sStartTimeArry = ");
+					for(int x = 0; x <= i; x++) {
+						System.out.print(sStartTimeArry[x] + ", ");
+					}
+					System.out.println("");
+					*/
+				}
+			}
+		}
+		/*
+		System.out.print("Results after exited from loop: \nsStartTimeArry = ");
+		for(int x = 0; x <= i; x++) {
+			System.out.print(sStartTimeArry[x] + ", ");
+		}
+		System.out.println("");
+		*/
+		//b is the counter which starts from zero and loops through each position in geo arrays
 		for (int b = 0; b < i; b++) {
 			
          //calculates the great circle distance between two events at a time until i is reached
