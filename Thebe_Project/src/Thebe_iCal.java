@@ -404,7 +404,7 @@ public class Thebe_iCal {
 			for (int c = 0; c <= i; c++) {
 				
 				//makes connection to fileWriter and output file
-				fileWriter = new PrintWriter(sFileName + "_" + c + ".ics");
+				fileWriter = new PrintWriter(sFileName + "_" + (c + 1) + ".ics");
 				//begin writing to file
 				fileWriter.println("BEGIN:VCALENDAR\n"
 						+ "PRODID:-//Microsoft Corporation//Outlook 14.0 MIMEDIR//EN\n"
@@ -435,7 +435,7 @@ public class Thebe_iCal {
 					+ "LAST-MODIFIED:" + sCurrentTime + "\n"
 					+ "GEO:" + fLatArray[c] + ";" + fLongArray[c]);
                 if(dStatuteMiles[c] != null && dKilometers[c] != null) {
-                	fileWriter.println("COMMENT: Statute Miles = " + dStatuteMiles[c] + "; Kilometers = " + dKilometers[c]);
+                	fileWriter.println("COMMENT: Distance to Event " + (c + 2) + " is " + dStatuteMiles[c] + " SM or " + dKilometers[c] + " km");
                 }
 				//only writes the location syntax if the field has been entered
 				if(sLocationArry[c].trim().length() > 0) {
