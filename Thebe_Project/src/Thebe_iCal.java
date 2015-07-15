@@ -14,46 +14,52 @@ public class Thebe_iCal {
 	 * @param args
 	 */
 	public static void main(String[] args) {
+		//controls how many event files a user can enter in the program
+		final int SIZE = 5;
+		//this is the minimum array size required to perform sorting and calcuation methods
+		final int MIN_SIZE = 1;
 		//Event subject line
 		String sSubject = "";
-		String [] sSubjectArry = new String[5];
+		String [] sSubjectArry = new String[SIZE];
 		//Event location
 		String sLocation = "";
-		String [] sLocationArry = new String[5];
+		String [] sLocationArry = new String[SIZE];
 		//Event description which will be placed in the body
 		String sBody = "";
-		String [] sBodyArry = new String[5];
+		String [] sBodyArry = new String[SIZE];
 		//Beginning month event starts
 		String sStartMonth = "";
-		String [] sStartMonthArry = new String[5];
+		String [] sStartMonthArry = new String[SIZE];
 		//Beginning day event starts
 		String sStartDay = "";
-		String [] sStartDayArry = new String[5];
+		String [] sStartDayArry = new String[SIZE];
 		//Beginning year event starts
 		String sStartYear = "";
-		String [] sStartYearArry = new String[5];
+		String [] sStartYearArry = new String[SIZE];
 		//Beginning time event starts
 		String sStartTime = "";
-		String [] sStartTimeArry = new String[5];
+		String [] sStartTimeArry = new String[SIZE];
 		//End month event ends
 		String sEndMonth = "";
-		String [] sEndMonthArry = new String[5];
+		String [] sEndMonthArry = new String[SIZE];
 		//End day event ends
 		String sEndDay = "";
-		String [] sEndDayArry = new String[5];
+		String [] sEndDayArry = new String[SIZE];
 		//End year event ends
 		String sEndYear = "";
-		String [] sEndYearArry = new String[5];
+		String [] sEndYearArry = new String[SIZE];
 		//End time event ends
 		String sEndTime = "";
-		String [] sEndTimeArry = new String[5];
+		String [] sEndTimeArry = new String[SIZE];
 		//Event class
 		String sClass = "";
-		String [] sClassArry = new String[5];
+		String [] sClassArry = new String[SIZE];
 		double dNauticleMiles;
-		Double [] dStatuteMiles = new Double[5];
-		Double [] dKilometers = new Double[5];
+		Double [] dStatuteMiles = new Double[SIZE];
+		Double [] dKilometers = new Double[SIZE];
+		//number to convert nautical miles to kilometers
 		double dNautToKilo = 1.852;
+		//number to convert nautical miles to statute miles
         double dNautToStat = 1.15077944802;
 		//system current date
 		String Sysdate = LocalDateTime.now().toString();
@@ -63,10 +69,10 @@ public class Thebe_iCal {
 		String sFileName = "";
 		//longitude of location
 		Float GeoLat = 21.4667f;
-		Float[] fLatArray= new Float[5];
+		Float[] fLatArray= new Float[SIZE];
 		//latitude of location
 		Float GeoLong = 157.9833f;
-		Float[] fLongArray = new Float[5];
+		Float[] fLongArray = new Float[SIZE];
 		//User's choice for window 1
 		int iChoice = -1;
 		//sentinel value for loops
@@ -132,9 +138,9 @@ public class Thebe_iCal {
 			"Geo Longitude", fGeoLong
 		};
 				
-		while (bContinue == true) {
-		//displays the iCal Event Creator window to the user
-		iChoice = JOptionPane.showConfirmDialog(null, fields, "iCal Event Creator", JOptionPane.OK_CANCEL_OPTION);
+		while (bContinue == true && i < SIZE) {
+			//displays the iCal Event Creator window to the user
+			iChoice = JOptionPane.showConfirmDialog(null, fields, "iCal Event Creator", JOptionPane.OK_CANCEL_OPTION);
 		
 			//terminates program if user does not click 'OK'
 			if (iChoice != 0) {
@@ -247,9 +253,9 @@ public class Thebe_iCal {
 			
 			//asks if user wants to create another event file
 			iContinueProgram = JOptionPane.showConfirmDialog(null, "Do you want to create another same-day event?");
-			
-			//if 'Yes' then reset all variable back to original values and increment i counter
-			if (iContinueProgram == 0) {
+
+			//user wants to enter another event and the array still has room
+			if (iContinueProgram == 0 && i < (SIZE - 1)) {
 				bContinue = true;
 				iChoice = -1;
 				bValidCoordinates = false;
@@ -272,10 +278,21 @@ public class Thebe_iCal {
 				//states if day is valid based on month an leap year
 				bValidDate = false;
 				i++;
+				//System.out.println("i = " + i);
 			}//end if bContinue statement
-			//exits the program without writing files if otherwise
-			else {
+			//user wants to enter another event but the array is full
+			else if(iContinueProgram == 0 && i == (SIZE - 1)) {
+				JOptionPane.showMessageDialog(null, "You have entered the max number of events.");
 				bContinue = false;
+			}
+			//user does not want to enter another event
+			else if(iContinueProgram == 1) {
+				bContinue = false;	
+			}
+			//if user selects cancel or closes dialog box quit program
+			else if(iContinueProgram == 2 || iContinueProgram == -1) {
+				JOptionPane.showMessageDialog(null, "iCal Event has not been created.");
+				System.exit(1);
 			}
 		}//end bContinue while loop
 		
@@ -305,12 +322,14 @@ public class Thebe_iCal {
 		System.out.println("");
 		*/
 		//bubble sort for loop which sorts event files in ascending order based on the sStartTime
-		for(int p = 0; p < i; p++) {
+		for(int p = 0; p < i && i >= MIN_SIZE; p++) {
+			System.out.println("bublesort outer loop executed " + p + " times");
 			
+			//inner loop to compare one position with the rest of the array
 			for(int n = p + 1; n <= i; n++) {
+				System.out.println("bublesort inner loop executed " + n + " times");
 				//if the sStartTime is > the subsequent event file's sStartTime then switch all variables
 				if(Integer.parseInt(sStartTimeArry [p]) > Integer.parseInt(sStartTimeArry [n])) {
-					
 					//container variable which holds each variable temporarily
 					sNowTime = sStartTimeArry [n];
 					sPastTime = sStartTimeArry [p];
@@ -364,18 +383,23 @@ public class Thebe_iCal {
 		}
 		System.out.println("");
 		*/
-		//b is the counter which starts from zero and loops through each position in geo arrays
-		for (int b = 0; b < i; b++) {
+		//ensure to stop loop at (i - 1) since we add 1 to i inside the loop
+		for (int b = 0; b <= (i - 1) && i >= MIN_SIZE; b++) {
+			System.out.println("calculatdistance executed " + b + " times");
 			//calculates the great circle distance between two events at a time until i is reached
 			dNauticleMiles = Thebe_iCal.calculateDistance(fLatArray[b], fLongArray[b], fLatArray[b+1], fLongArray[b+1]);
 		    dStatuteMiles[b] = dNauticleMiles * dNautToStat;
 		    dKilometers[b] = dNauticleMiles * dNautToKilo;
 		}
 		
-		//once user is done entering event files prompt user for name of file to be saved
-		sFileName = JOptionPane.showInputDialog("Please enter a name to save your file.");
-		
 		try {
+			//once user is done entering event files prompt user for name of file to be saved
+			sFileName = JOptionPane.showInputDialog("Please enter a name to save your file.");
+			
+			//if the user does not enter a file name then give generic name
+			if(sFileName.trim().length() < 1) {
+				sFileName = "Untitled";
+			}
 			//c is the counter which loops through each event file's data
 			for (int c = 0; c <= i; c++) {
 				
@@ -443,6 +467,9 @@ public class Thebe_iCal {
 		//this exception must be caught in order to use the fileWriter
 		catch (FileNotFoundException fnf) {
 			JOptionPane.showMessageDialog(null, "The file could not be found!");
+		}
+		catch (NullPointerException npe) {
+			JOptionPane.showMessageDialog(null, "iCal Event has not been created.");
 		}
 
 	}//end main() arg
@@ -514,7 +541,7 @@ public class Thebe_iCal {
 		int iJun = 6; //30 days
 		int iSep = 9; //30 days
 		int iNov = 11; //30 days
-		int iShort = 28; //case where month is 29 days
+		int iShort = 29; //case where month is 29 days
 		int iLong = 30; //case where month is 30 days
 		
 		//checks if user enters a day greater than 28 for the month of Feb 
