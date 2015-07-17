@@ -55,8 +55,8 @@ public class Thebe_iCal {
 		String sClass = "";
 		String [] sClassArry = new String[SIZE];
 		double dNauticleMiles;
-		Double [] dStatuteMiles = new Double[SIZE];
-		Double [] dKilometers = new Double[SIZE];
+		Integer [] iStatuteMiles = new Integer[SIZE];
+		Integer [] iKilometers = new Integer[SIZE];
 		//number to convert nautical miles to kilometers
 		double dNautToKilo = 1.852;
 		//number to convert nautical miles to statute miles
@@ -86,10 +86,12 @@ public class Thebe_iCal {
 		int iContinueProgram;
 		//loop through program again
 		boolean bContinue = true;
-		//valid time
-		boolean bValidTime = false;
 		//initializes fileWriter
 		PrintWriter fileWriter = null;
+		//max distance to recommend walking
+		int iWalk = 5;
+		//max distance to recommend driving
+		int iDrive = 500;
 
 		//instantiates the drop down menu lists
 		String[] sTime = {"0000", "0100", "0200", "0300", "0400", "0500", "0600", "0700", "0800", "0900", "1000", "1100", "1200", "1300", "1400", "1500", "1600", "1700", "1800", "1900", "2000", "2100", "2200", "2300"};
@@ -388,8 +390,8 @@ public class Thebe_iCal {
 			System.out.println("calculatdistance executed " + b + " times");
 			//calculates the great circle distance between two events at a time until i is reached
 			dNauticleMiles = Thebe_iCal.calculateDistance(fLatArray[b], fLongArray[b], fLatArray[b+1], fLongArray[b+1]);
-		    dStatuteMiles[b] = dNauticleMiles * dNautToStat;
-		    dKilometers[b] = dNauticleMiles * dNautToKilo;
+		    iStatuteMiles[b] = (int)(dNauticleMiles * dNautToStat);
+		    iKilometers[b] = (int)(dNauticleMiles * dNautToKilo);
 		}
 		
 		try {
@@ -434,8 +436,17 @@ public class Thebe_iCal {
 					+ "DTSTART;TZID=\"Hawaiian Standard Time\":" + sStartYearArry[c] + sStartMonthArry[c] + sStartDayArry[c] + "T" + sStartTimeArry[c] + "00\n"
 					+ "LAST-MODIFIED:" + sCurrentTime + "\n"
 					+ "GEO:" + fLatArray[c] + ";" + fLongArray[c]);
-                if(dStatuteMiles[c] != null && dKilometers[c] != null) {
-                	fileWriter.println("COMMENT: Distance to Event " + (c + 2) + " is " + dStatuteMiles[c] + " SM or " + dKilometers[c] + " km");
+                if(iStatuteMiles[c] != null && iKilometers[c] != null) {
+                	fileWriter.print("COMMENT: Distance to Event " + (c + 2) + " is " + iStatuteMiles[c] + " SM or " + iKilometers[c] + " km; Recommended Mode of Transport: ");
+                	if(iStatuteMiles[c] <= iWalk) {
+                		fileWriter.println("Walking");
+                	}
+                	else if(iStatuteMiles[c] > iWalk && iStatuteMiles[c] <= iDrive) {
+                		fileWriter.println("Driving/Bus");
+                	}
+                	else if(iStatuteMiles[c] > iDrive) {
+                		fileWriter.println("Flying");
+                	}
                 }
 				//only writes the location syntax if the field has been entered
 				if(sLocationArry[c].trim().length() > 0) {
@@ -460,13 +471,13 @@ public class Thebe_iCal {
 				fileWriter.close();
 				
 				//displays message if file was written successfully
-				JOptionPane.showMessageDialog(null,"Your event file " + sFileName + "_" + c + ".ics" + " has been successfully created!");
+				JOptionPane.showMessageDialog(null,"Your event file " + sFileName + "_" + (c+1) + ".ics" + " has been successfully created!");
 			}//end for loop which prints each event file entered
 		}//end try
 		
 		//this exception must be caught in order to use the fileWriter
 		catch (FileNotFoundException fnf) {
-			JOptionPane.showMessageDialog(null, "The file could not be found!");
+			JOptionPane.showMessageDialog(null, "An error has occurred!");
 		}
 		catch (NullPointerException npe) {
 			JOptionPane.showMessageDialog(null, "iCal Event has not been created.");
