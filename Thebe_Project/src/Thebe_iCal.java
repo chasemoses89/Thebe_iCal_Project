@@ -54,6 +54,16 @@ public class Thebe_iCal {
 		//Event class
 		String sClass = "";
 		String [] sClassArry = new String[SIZE];
+		//Timezone
+		String sTimezone = "";
+		String [] sTimezoneArry = new String [SIZE];
+		String sHawaii = "-1000";
+		String sAlaska = "-0900";
+		String sPacific = "-0800";
+		String sMountain = "-0700";
+		String sEastern = "-0500";
+		String sDateline = "-1200";
+		String sTimeInput = "";
 		double dNauticleMiles;
 		Integer [] iStatuteMiles = new Integer[SIZE];
 		Integer [] iKilometers = new Integer[SIZE];
@@ -99,6 +109,7 @@ public class Thebe_iCal {
 		String[] sMonth = {"01", "02", "03", "04", "05", "06", "07", "08", "09", "10", "11", "12"};
 		String[] sYear = {"2015", "2016", "2017", "2018", "2019", "2020"};
 		String[] sClasses = {"PUBLIC", "PRIVATE", "CONFIDENTIAL"};
+		String[] sZone = {"Hawaiian", "Alaskan", "Pacific", "Mountain", "Eastern", "Dateline"};
 		
 		//instantiates all the drop down menu items
 		JComboBox jStartTime = new JComboBox(sTime);
@@ -110,6 +121,7 @@ public class Thebe_iCal {
 		JComboBox jEndMonth = new JComboBox(sMonth);
 		JComboBox jEndYear = new JComboBox(sYear);
 		JComboBox jClasses = new JComboBox(sClasses);
+		JComboBox jZone = new JComboBox(sZone);
 		
 		//instantiates all the text fields
 		JTextField fSubject = new JTextField();
@@ -132,6 +144,7 @@ public class Thebe_iCal {
 			"Month", jEndMonth,
 			"Day", jEndDay,
 			"Time", jEndTime,
+			"Timezone", jZone
 		};
 		
 		//instantiates another array of object to display geographic position fields
@@ -163,6 +176,7 @@ public class Thebe_iCal {
 			sEndDay = jEndDay.getSelectedItem().toString();
 			sEndTime = jEndTime.getSelectedItem().toString();
 			sClass = jClasses.getSelectedItem().toString();
+			sTimezone = jZone.getSelectedItem().toString();
 		
 			//instantiates boolean variable by called methods to be used in the while statement below
 			bValidTimeFrame = Thebe_iCal.CheckBacktrack(sStartYear, sEndYear, sStartMonth, sEndMonth, sStartDay, sEndDay, sStartTime, sEndTime);
@@ -200,6 +214,7 @@ public class Thebe_iCal {
 				sEndDay = jEndDay.getSelectedItem().toString();
 				sEndTime = jEndTime.getSelectedItem().toString();
 				sClass = jClasses.getSelectedItem().toString();
+				sTimezone = jZone.getSelectedItem().toString();
 			
 				//call methods again to see if they return true or false
 				bValidTimeFrame = Thebe_iCal.CheckBacktrack(sStartYear, sEndYear, sStartMonth, sEndMonth, sStartDay, sEndDay, sStartTime, sEndTime);
@@ -252,6 +267,7 @@ public class Thebe_iCal {
 			sClassArry [i] = sClass;
 			fLatArray [i] = GeoLat;
 			fLongArray [i] = GeoLong;
+			sTimezoneArry [i] = sTimezone;
 			
 			//asks if user wants to create another event file
 			iContinueProgram = JOptionPane.showConfirmDialog(null, "Do you want to create another same-day event?");
@@ -272,6 +288,7 @@ public class Thebe_iCal {
 				sEndDay = "";
 				sEndYear = "";
 				sEndTime = "";
+				sTimezone = "";
 				sClass = "";
 				GeoLat = null;
 				GeoLong = null;
@@ -311,6 +328,8 @@ public class Thebe_iCal {
 		String sPastClass = "";
 		String sNowBody = "";
 		String sPastBody = "";
+		String sNowTimezone = "";
+		String sPastTimezone = "";
 		Float fNowLat;
 		Float fPastLat;
 		Float fNowLong;
@@ -349,6 +368,8 @@ public class Thebe_iCal {
 					fPastLat = fLatArray[p];
 					fNowLong = fLongArray[n];
 					fPastLong = fLongArray[p];
+					sNowTimezone = sTimezoneArry[n];
+					sPastTimezone = sTimezoneArry[p];
 					
 					//switch variables
 					sStartTimeArry [n] = sPastTime;
@@ -367,6 +388,8 @@ public class Thebe_iCal {
 					fLatArray[p] = fNowLat;
 					fLongArray[n] = fPastLong;
 					fLongArray[p] = fNowLong;
+					sTimezoneArry[n] = sPastTimezone;
+					sTimezoneArry[p] = sNowTimezone;
 					
 					/*
 					System.out.print("sStartTimeArry = ");
@@ -414,11 +437,31 @@ public class Thebe_iCal {
 						+ "METHOD:PUBLISH\n"
 						+ "X-MS-OLK-FORCEINSPECTOROPEN:TRUE\n"
 						+ "BEGIN:VTIMEZONE\n"
-						+ "TZID:Hawaiian Standard Time\n"
+						+ "TZID:" + sTimezoneArry[c] + " Standard Time\n"
 						+ "BEGIN:STANDARD\n"
-						+ "DTSTART:16010101T000000\n"
-						+ "TZOFFSETFROM:-1000\n"
-						+ "TZOFFSETTO:-1000\n"
+						+ "DTSTART:16010101T000000");
+				
+				if(sTimezoneArry[c] == "Hawaiian") {
+					sTimeInput = sHawaii;
+				}
+				else if(sTimezoneArry[c] == "Alaskan") {
+					sTimeInput = sAlaska;
+				}
+				else if(sTimezoneArry[c] == "Pacific") {
+					sTimeInput = sPacific;
+				}
+				else if(sTimezoneArry[c] == "Mountain") {
+					sTimeInput = sMountain;
+				}
+				else if(sTimezoneArry[c] == "Eastern") {
+					sTimeInput = sEastern;
+				}
+				else if(sTimezoneArry[c] == "Dateline") {
+					sTimeInput = sDateline;
+				}
+				fileWriter.println(
+						"TZOFFSETFROM:" + sTimeInput + "\n"
+						+ "TZOFFSETTO:" + sTimeInput + "\n"
 						+ "END:STANDARD\n"
 						+ "END:VTIMEZONE\n"
 						+ "BEGIN:VEVENT");
@@ -431,9 +474,9 @@ public class Thebe_iCal {
 				//only writes the created syntax if the field has been entered
 				fileWriter.println("CREATED:" + sCurrentTime + "\n"
 					+ "DESCRIPTION:" + sBodyArry[c] + "\\n\n"
-					+ "DTEND;TZID=\"Hawaiian Standard Time\":" + sEndYearArry[c] + sEndMonthArry[c] + sEndDayArry[c] + "T" + sEndTimeArry[c] + "00\n"
+					+ "DTEND;TZID=\"" + sTimezoneArry[c] + " Standard Time\":" + sEndYearArry[c] + sEndMonthArry[c] + sEndDayArry[c] + "T" + sEndTimeArry[c] + "00\n"
 					+ "DTSTAMP:" + sCurrentTime + "\n"
-					+ "DTSTART;TZID=\"Hawaiian Standard Time\":" + sStartYearArry[c] + sStartMonthArry[c] + sStartDayArry[c] + "T" + sStartTimeArry[c] + "00\n"
+					+ "DTSTART;TZID=\"" + sTimezoneArry[c] + " Standard Time\":" + sStartYearArry[c] + sStartMonthArry[c] + sStartDayArry[c] + "T" + sStartTimeArry[c] + "00\n"
 					+ "LAST-MODIFIED:" + sCurrentTime + "\n"
 					+ "GEO:" + fLatArray[c] + ";" + fLongArray[c]);
                 if(iStatuteMiles[c] != null && iKilometers[c] != null) {
