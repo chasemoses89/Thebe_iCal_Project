@@ -595,7 +595,7 @@ public class Thebe_iCal {
 		int iJun = 6; //30 days
 		int iSep = 9; //30 days
 		int iNov = 11; //30 days
-		int iShort = 29; //case where month is 29 days
+		int iShort = 28; //case where month is 28 days
 		int iLong = 30; //case where month is 30 days
 		
 		//checks if user enters a day greater than 28 for the month of Feb 
